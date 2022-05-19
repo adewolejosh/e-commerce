@@ -34,7 +34,15 @@ const catalogOfSellers = async function(req, res) {
         .then(data => {
             return data;
         });
+
+        // pro = [];
+        // for(let elem of sellerCat['products']){
+        //     pro.push(await Product.findOne({id: elem}));
+        // }
+
         if (sellerCat){
+            // s = JSON.stringify(sellerCat);
+            // jpro = s.concat(JSON.stringify(pro));
             return res.status(200).send(sellerCat);
         } else {
             return res.status(404).send('{ "message": "catalog does not exist!"}');
@@ -46,46 +54,49 @@ const catalogOfSellers = async function(req, res) {
 
 const createOrders = async function(req, res) {
     try {
-        console.log(req.headers);
-        const { sellerId } = req.params.seller_id;
-        const { products } = req.body;
-
-        console.log(sellerId, products);
-
-        if (!products) {
+        if (Object.keys(req.body).length === 0) {
             return res.status(400).send("You have not selected any products from this catalogue");
         }
-        
 
-        cur_seller = await User.findOne({user_id: sellerId});
+        const { sellerId } = req.params['seller_id'];
+        // const { products } = req.body;
+
+        console.log(req.params['seller_id'], req.body);
+
+
+        cur_seller = await User.findOne({_id: req.params['seller_id']});
         
         sellerCatID = await Catalog.findOne({seller: cur_seller['_id']})
         .then(data => {
-            return data['_id'];
+            return data;
         });
 
-        for (elem in products) {
-            product = await Product.findOne({_id: products['id'][elem]})
-            .then(data => {
-                return data;
-            });
-            if(sellerCatID['products'].indexOf(product === -1) ){
+        for (elem of req.body) {
+            if (!(sellerCatID['products'].includes(elem))) {
+                console.log(elem);
                 return res.status(404).send("{'message': 'one or more products not in this category'");
             }
         }
 
-        new_order = Order.create({
-            buyer: req.user['user_id'],
-            seller: cur_seller,
-            products: products,
-        })
-
-        return res.status(201).json(new_order);
+        order_exists = await Order.findOne({buyer: req.user['user_id'], seller: cur_seller});
+        if (order_exists) {
+            old_order = await Order.findOneAndUpdate({
+                buyer: req.user['user_id'],
+                seller: cur_seller,
+            }, {$addToSet: { products: req.body}} )
+            return res.status(201).send("One or more Already exist in order");
+        } else {
+            new_order = await Order.create({
+                buyer: req.user['user_id'],
+                seller: cur_seller,
+                products: req.body,
+            });
+            return res.status(201).send(new_order);
+        }
     } catch (err) {
         console.log(err);
     }
 };
-
 
 const router = express.Router();
 

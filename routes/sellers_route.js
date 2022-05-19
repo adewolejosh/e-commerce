@@ -4,6 +4,7 @@ const express = require('express');
 const Catalog = require("../models/catalogue");
 const Product = require("../models/product");
 const { sellerPerm } = require("../middlewares/permission");
+const Order = require("../models/order");
 
 
 const createCatalog = async function(req, res) {
@@ -37,9 +38,18 @@ const createCatalog = async function(req, res) {
 
 const listOfOrders = async function(req, res) {
     try {
-
+        orders = await Order.find({seller: req.user['user_id']})
+        .then(data => {
+            return data;
+        })
+        if (orders.length >= 1){
+            return res.status(200).json(orders);
+        } else{
+            return res.status(404).send("No orders yet!");
+        }
+       
     } catch (err) {
-        
+        console.log(err);
     }
 }
 
