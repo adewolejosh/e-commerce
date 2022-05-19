@@ -13,6 +13,12 @@ const createCatalog = async function(req, res) {
             return res.status(400).send("All product details required for catalog")
         }
 
+        // for(elem of req.body){
+        //     if (!(elem["name"] && elem["price"])){
+        //         return res.status(409).send("An error occured, fill in all details");
+        //     };
+        // }
+
         products_added = await Product.insertMany(req.body)
         .then((products) => {
             return products
@@ -33,6 +39,7 @@ const createCatalog = async function(req, res) {
 
     } catch (err) {
         console.log(err);
+        return res.status(400).json(err);
     }
 }
 

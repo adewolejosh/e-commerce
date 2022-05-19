@@ -18,7 +18,7 @@ const RegisterUser = async function (req, res) {
 
         user_exists = await User.findOne({email}) || await User.findOne({username});
         if (user_exists) {
-            return res.status(409).send("User with such mail already exists");
+            return res.status(409).send("User with such mail/username already exists");
         }
 
         var salt = bcrypt.genSaltSync(10);
@@ -43,6 +43,7 @@ const RegisterUser = async function (req, res) {
         return res.status(201).json(user)
     } catch (error) {
         console.log(error)
+        return res.status(400).json(error);
     }
 };
 
@@ -76,6 +77,7 @@ const LoginUser = async function(req, res) {
         return res.status(409).send("Invalid Credentials")        
     } catch(error){
         console.log(error);
+        return res.status(400).json(error);
     }
 };
 

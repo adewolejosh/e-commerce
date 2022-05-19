@@ -67,3 +67,5 @@ You're good to run. Now run
 
 ### References
 - some images are in readme_images/ folder to help see some of the api input and results.
+- all routes except auth routes need an authorization token gotten from login to work.
+- Apis for Buyers are protected for buyers only, same for Sellers.
