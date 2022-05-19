@@ -5,8 +5,8 @@ an api for an e-commerce store, built with nodejs(express.js) and mongoDB.
 ### how to run locally:
 ```sh
 > $ git clone https://github.com/adewolejosh/e-commerce.git
-> $ npm i
 > $ cd e-commerce/
+> $ npm i
 ```
 
 create a ".env" file in the root folder and fill in the following
